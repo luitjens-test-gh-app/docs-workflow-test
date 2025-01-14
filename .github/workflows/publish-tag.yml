@@ -1,0 +1,13 @@
+name: Publish Release Test
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  am-i-running:
+    runs-on: ubuntu-latest
+    steps:
+      - name: echo something
+        run: echo "the workflow ran"
+

@@ -1,0 +1,124 @@
+name: Build and Publish
+
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - closed
+
+jobs:
+  npm-publish:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    # env:
+    #   RELEASE_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+    # permissions:
+    #   contents: write
+    steps:
+      # - name: Register npm token
+      #   run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
+
+      - name: Check out code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          # NOTE: Hard Coded Node Version
+          node-version: 22
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install semver
+        run: |
+          yarn add semver-compare-cli
+          yarn semver-compare -v
+  
+      - name: Check for teraslice version update
+        id: version_check
+        # HEAD is the merge commit
+        # HEAD^ is the previous commit (final commit of the PR)
+        # BASE_COMMIT is the common ancestor ()
+        run: |
+          HEAD=$(git rev-parse HEAD)
+          PR_HEAD=$(git rev-parse HEAD^)
+          echo "HEAD:" $HEAD
+          echo "PR_HEAD:" $PR_HEAD
+          BASE_COMMIT=$(git merge-base HEAD HEAD^)
+          echo "base commit:" $BASE_COMMIT
+
+          BASE_VERSION=$(git show $BASE_COMMIT:package.json | jq -r .version)
+          echo "base version:" $BASE_VERSION
+
+          PR_VERSION=$(git show HEAD^:package.json | jq -r .version)
+
+          echo "PR version:" $PR_VERSION
+
+          CURRENT_VERSION=$(jq -r .version package.json)
+          echo "current version:" $CURRENT_VERSION
+
+          if ./node_modules/.bin/semver-compare $CURRENT_VERSION gt $BASE_VERSION; then
+            CURRENT_RESULT=0
+          else
+            CURRENT_RESULT=1
+          fi
+          echo "current result:" $CURRENT_RESULT
+
+          if ./node_modules/.bin/semver-compare $PR_VERSION gt $BASE_VERSION; then
+            PR_RESULT=0
+          else
+            PR_RESULT=1
+          fi
+          echo "PR result:" $PR_RESULT
+
+          if [ $CURRENT_RESULT -eq 0 ] && [ $PR_RESULT -eq 0 ]; then
+            echo "version_updated=true"
+            echo "version_updated=true" >> $GITHUB_OUTPUT
+          else
+            echo "version_updated=false"
+            echo "version_updated=false" >> $GITHUB_OUTPUT
+          fi
+
+          echo "tag=v$CURRENT_VERSION"
+          echo "tag=v$CURRENT_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Create Release
+        if: steps.version_check.outputs.version_updated == 'true'
+        uses: softprops/action-gh-release@v2
+        with:
+          token: ${{ secrets.GITHUB_APP_RELEASE_TOKEN }}
+          prerelease: true
+          tag_name: ${{ steps.version_check.outputs.tag }}
+          name: ${{ steps.version_check.outputs.tag }}
+          # body: 'Human generated notes will go here'
+          body_path: ./RELEASE_NOTES.md
+          generate_release_notes: true
+          files: ./package.json
+
+      - name: Announce release in Slack channel
+        if: steps.version_check.outputs.version_updated == 'true'
+        uses: slackapi/slack-github-action@v2.0.0
+        with:
+          errors: true
+          method: chat.postMessage
+          token: ${{ secrets.SLACK_BOT_TOKEN }}
+          payload: |
+            channel: ${{ vars.SLACK_RELEASES_CHANNEL_ID }}
+            text: |
+              "npm-publish-workflow-test version ${{ steps.version_check.outputs.tag }} has been released.
+              Please review and revise the automated release notes:
+              https://github.com/terascope/teraslice/releases/tag/${{ steps.version_check.outputs.tag }}"
+
+      # - name: Install and build packages
+      #   run: yarn setup
+
+      # - name: Publish to npm
+      #   run: yarn ts-scripts publish -t tag npm
+
+      # - name: Retrieve version
+        # run : echo "NEW_VERSION=$(jq -r '.version' package.json)" >> $GITHUB_OUTPUT
+        # id: version
+      # - run: echo "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}" > ~/.npmrc && yarn publish --non-interactive --new-version ${{ steps.version.outputs.NEW_VERSION }} --no-git-tag-version --registry https://registry.npmjs.org/ --tag latest
+
