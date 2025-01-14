@@ -1,0 +1,82 @@
+name: Test
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  npm-publish:
+    runs-on: ubuntu-latest
+    # env:
+    #   NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+    # permissions:
+    #   contents: write
+    steps:
+      # - name: Register npm token
+      #   run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
+
+      - name: Check out code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          # NOTE: Hard Coded Node Version
+          node-version: 22
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install semver
+        id: install-semver
+        run: |
+          # yarn add semver-compare-cli
+          # yarn semver-compare -v
+
+          # if ./node_modules/.bin/semver-compare 1.0.0 gt 2.0.0; then
+          #   echo "version_updated=true"
+          # else
+          #   echo "version_updated=false"
+          # fi
+
+          # if ./node_modules/.bin/semver-compare 2.0.0 gt 2.0.0; then
+          #   echo "version_updated=true"
+          # else
+          #   echo "version_updated=false"
+          # fi
+
+          # if ./node_modules/.bin/semver-compare 3.0.0 gt 2.0.0; then
+          #   echo "version_updated=true"
+          # else
+          #   echo "version_updated=false"
+          # fi
+
+          CURRENT_VERSION=$(jq -r .version package.json)
+
+          tag=v$CURRENT_VERSION
+
+          echo "tag=$tag" >> $GITHUB_OUTPUT
+
+      # - name: Announce release in Slack channel
+      #   id: announce-release
+      #   uses: slackapi/slack-github-action@v2.0.0
+      #   with:
+      #     method: chat.postMessage
+      #     token: ${{ secrets.SLACK_BOT_TOKEN }}
+      #     payload: |
+      #       channel: ${{ vars.SLACK_RELEASES_CHANNEL_ID }}
+      #       text: |
+      #         npm-publish-workflow-test version ${{ steps.install-semver.outputs.tag }} updated.
+      #         Please review and revise the automated release notes:
+      #         https://github.com/terascope/teraslice/releases/tag/${{ steps.install-semver.outputs.tag }}
+
+      # - name: Failed Announcement Response
+      #   if: ${{ steps.announce-release.outputs.ok == 'false' }}
+      #   run: |
+      #     echo "Slackbot API response : ${{ steps.announce-release.outputs.response }}"
+      
+      # - name: Announcement Response
+      #   run: |
+      #     echo "Slackbot API response : ${{ steps.announce-release.outputs.response }}"
+      
