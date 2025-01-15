@@ -1,11 +1,13 @@
 name: Build and Publish
 
 on:
-  pull_request:
-    branches:
-      - main
-    types:
-      - closed
+  workflow_dispatch
+  # disable this workflow to test asset workflow
+  # pull_request:
+  #   branches:
+  #     - main
+  #   types:
+  #     - closed
 
 jobs:
   npm-publish:
