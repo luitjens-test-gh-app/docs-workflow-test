@@ -11,5 +11,5 @@ on:
 jobs:
   call-asset-build:
     if: github.event.pull_request.merged == true
-    uses: luitjens-test-gh-app/workflows/.github/workflows/asset-build-and-publish.yml@1128f4615fbc49ebc39a763170580e7e76223a48
+    uses: luitjens-test-gh-app/workflows/.github/workflows/asset-build-and-publish.yml@349d585659e6af7c1f2b03bc13e0280850c4a456
     secrets: inherit
