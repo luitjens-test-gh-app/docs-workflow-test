@@ -1,0 +1,12 @@
+on:
+  repository_dispatch:
+    types: [trigger-workflow]
+
+jobs:
+  echo:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: echo
+        run: |
+          echo "It worked"
