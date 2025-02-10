@@ -1,5 +1,5 @@
-name: Build, Publish and Release Teraslice Asset
-run-name: ${{ github.actor }} is building, publishing and releasing the Teraslice Asset
+name: Build, Publish and Release
+run-name: ${{ github.actor }} is building, publishing and releasing 
 on:
   workflow_dispatch:
   pull_request:
