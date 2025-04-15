@@ -1,6 +1,6 @@
 {
   "name": "workflow-tests",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "main": "index.ts",
   "repository": "git@github.com:luitjens-test-gh-app/workflow-tests.git",
   "author": "busma13 <pluitjens@terascope.io>",
