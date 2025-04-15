@@ -1,19 +1,25 @@
 {
   "name": "workflow-tests",
   "version": "1.0.7",
-  "main": "index.js",
+  "main": "index.ts",
   "repository": "git@github.com:luitjens-test-gh-app/workflow-tests.git",
   "author": "busma13 <pluitjens@terascope.io>",
   "license": "MIT",
   "scripts": {
     "build": "tsc --build",
+    "docs": "yarn typedoc --plugin typedoc-plugin-markdown --out ./docs --logLevel Verbose",
     "setup": "yarn && yarn build --force"
   },
   "devDependencies": {
     "@types/express": "^5.0.0",
+    "typedoc": "^0.28.2",
+    "typedoc-plugin-markdown": "^4.6.2",
     "typescript": "^5.7.3"
   },
   "dependencies": {
     "express": "^4.21.2"
+  },
+  "peerDependencies": {
+    "typescript": "^5.7.3"
   }
 }
