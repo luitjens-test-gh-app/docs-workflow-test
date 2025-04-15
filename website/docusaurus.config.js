@@ -2,17 +2,17 @@ module.exports = {
     title: 'workflow tests',
     tagline: 'Tests',
     url: 'https://luitjens-test-gh-app.github.io',
-    baseUrl: '/docs-workflow-tests/',
+    baseUrl: '/docs-workflow-test/',
     organizationName: 'luitjens-test-gh-app',
     projectName: 'test-workflows',
     scripts: [
         'https://buttons.github.io/buttons.js',
         'https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js',
-        '/docs-workflow-tests/js/copy-code-block.js'
+        '/docs-workflow-test/js/copy-code-block.js'
     ],
     stylesheets: [
         {
-            href: '/docs-workflow-tests/css/custom.css',
+            href: '/docs-workflow-test/css/custom.css',
             type: 'text/css',
             rel: 'stylesheet'
         }
