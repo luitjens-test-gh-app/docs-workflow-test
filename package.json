@@ -1,8 +1,8 @@
 {
-  "name": "workflow-tests",
-  "version": "1.0.9",
+  "name": "docs-workflow-tests",
+  "version": "1.0.10",
   "main": "index.ts",
-  "repository": "git@github.com:luitjens-test-gh-app/workflow-tests.git",
+  "repository": "git@github.com:luitjens-test-gh-app/docs-workflow-tests.git",
   "author": "busma13 <pluitjens@terascope.io>",
   "license": "MIT",
   "scripts": {

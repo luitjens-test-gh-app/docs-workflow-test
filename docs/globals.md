@@ -1,5 +1,5 @@
-[**workflow-tests**](README.md)
+[**docs-workflow-tests**](README.md)
 
 ***
 
-# workflow-tests
+# docs-workflow-tests
